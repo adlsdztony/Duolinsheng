@@ -11,7 +11,10 @@ def index():
 
 @app.route('/get_review', methods=['POST'])
 def get_review():
-    my_list, days = review.review('record.xlsx')
+    data = request.get_json()
+    file_name = data.get('file_name', 'reocrd-Karis.xlsx')
+    learn_words = data.get('learn_words', 5)
+    my_list, days = review.review('record-'+file_name+'.xlsx', learn_words)
     return jsonify(my_list=my_list, days=days)
 
 if __name__ == '__main__':

@@ -1,5 +1,7 @@
 var my_list, days;
 var currentIndex = 0;
+var file_name = 'Karis';
+var learn_words = 2;
 
 
 function confettiJs() {
@@ -50,6 +52,7 @@ function displayNextItem() {
 
 function send_post() {
     var promise = new Promise(function (resolve, reject) {
+        var data = JSON.stringify({ file_name: file_name, learn_words: learn_words });
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "/get_review", true);
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
@@ -59,12 +62,11 @@ function send_post() {
                 my_list = response.my_list;
                 days = response.days;
                 resolve([my_list, days]);
-            }else{
+            } else {
                 reject(xhr.statusText);
             }
         };
-        xhr.send();
-        console.log("async ing");
+        xhr.send(data);
     })
     return promise;
 }
@@ -77,15 +79,56 @@ async function display_review() {
 }
 
 var start_flag = true;
+var select_btn = document.getElementById('radio-buttons');
+var btn = document.getElementById('itemDisplay');
+var input_learn_words = document.getElementById('input');
 
-document.addEventListener('click', function () {
+btn.addEventListener('click', function () {
     if (start_flag) {
+        learn_words = input_learn_words.value;
+        document.cookie = "learn_words=" + learn_words;
         display_review();
         start_flag = false;
+        select_btn.style.display = 'none';
+        input_learn_words.style.display = 'none';
     } else {
         displayNextItem();
     }
-
 });
 
 
+const radioButtons = document.querySelectorAll('.radio-button input[name="option"]');
+let selectedOption;
+
+radioButtons.forEach(radioButton => {
+    radioButton.addEventListener('change', function () {
+        if (this.checked) {
+            selectedOption = this.value;
+            file_name = selectedOption;
+            document.cookie = "username=" + selectedOption;
+        }
+    });
+});
+
+function getCookie(name) {
+    const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+    return cookieValue ? cookieValue.pop() : '';
+}
+
+const username = getCookie('username');
+if (username) {
+    if (username === 'Karis') {
+        radioButtons[0].checked = true;
+    } else if (username === 'Tracy') {
+        radioButtons[1].checked = true;
+    }
+} else {
+    console.log("No username cookie found.");
+}
+
+var learn_words_cookie = getCookie('learn_words');
+if (learn_words) {
+    input_learn_words.value = learn_words_cookie;
+} else {
+    console.log("No learn_words cookie found.");
+}

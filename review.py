@@ -2,7 +2,8 @@ import openpyxl
 import datetime
 
 
-def review(file_name):
+def review(file_name, learn_words='5'):
+    learn_words = int(learn_words)
     res = []
     wave = '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
     workbook = openpyxl.load_workbook(file_name)
@@ -19,7 +20,7 @@ def review(file_name):
     new_word_list = []
     for entry in sheet.iter_rows(min_row=2,values_only=True):
         if entry[3] == None:
-            if new_word > 5:
+            if new_word > learn_words:
                 for word in new_word_list:
                     res.append(word[0]+'\n')
                     res.append(word[1]+'\n')
