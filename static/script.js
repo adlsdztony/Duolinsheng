@@ -38,9 +38,32 @@ function confettiJs() {
     }, 250);
 }
 
+var audioPlayer = document.getElementById('audioPlayer');
+var word_check = 1;
 
 function displayNextItem() {
-    document.getElementById('itemDisplay').innerText = my_list[currentIndex];
+    var show_word = my_list[currentIndex]
+    document.getElementById('itemDisplay').innerText = show_word;
+    console.log(show_word);
+    if (show_word.charAt(0)=='~') {
+        var endIndex = show_word.indexOf("\n", 33);
+        if (endIndex === -1) {
+            endIndex = show_word.length;
+        }
+        var extracted_word = show_word.substring(33, endIndex);
+        audioPlayer.src = "http://dict.youdao.com/dictvoice?type=1&audio="+extracted_word;
+        audioPlayer.play();
+        console.log(extracted_word);
+    }else{
+        if (word_check % 2 == 1) {
+            audioPlayer.src = "http://dict.youdao.com/dictvoice?type=1&audio="+show_word;
+            audioPlayer.play();
+            word_check++;
+        }else{
+            word_check++;
+        }
+    }
+
     currentIndex++;
     if (currentIndex > my_list.length) {
         currentIndex = 0;
@@ -118,8 +141,10 @@ function getCookie(name) {
 const username = getCookie('username');
 if (username) {
     if (username === 'Karis') {
+        file_name = 'Karis';
         radioButtons[0].checked = true;
     } else if (username === 'Tracy') {
+        file_name = 'Tracy';
         radioButtons[1].checked = true;
     }
 } else {
@@ -131,4 +156,10 @@ if (learn_words) {
     input_learn_words.value = learn_words_cookie;
 } else {
     console.log("No learn_words cookie found.");
+}
+
+// 
+function playAudio() {
+    var audioPlayer = document.getElementById('audioPlayer');
+    audioPlayer.play();
 }

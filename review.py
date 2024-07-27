@@ -5,7 +5,7 @@ import datetime
 def review(file_name, learn_words='5'):
     learn_words = int(learn_words)
     res = []
-    wave = '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+    wave = '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'  #32
     workbook = openpyxl.load_workbook(file_name)
     sheet = workbook.active
 
