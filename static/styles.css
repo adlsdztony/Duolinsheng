@@ -54,7 +54,7 @@ button:active {
 
 @media screen and (max-width: 768px) {
     .phone {
-        width: 50%;
+        width: 60%;
         height: auto;
         overflow: hidden;
     }
@@ -68,8 +68,21 @@ button:active {
         height: 100%;
         background-color: rgb(240, 240, 240);
     }
+
+    #review_btn {
+        width: 60%;
+        height: auto;
+        overflow: hidden;
+        top: 52%;
+    }
 }
 
+/* width over 768px */
+@media screen and (min-width: 768px) {
+    #review_btn {
+        top: 55%;
+    }
+}
 
 /*  */
 .radio-buttons {
@@ -158,9 +171,18 @@ button:active {
     font-size: 14px;
     font-weight: bold;
     text-align: center;
-  }
-  
-  #input:focus {
+}
+
+#input:focus {
     outline-offset: 5px;
     background-color: #fff
-  }
+}
+
+#review_btn {
+    /* width: 83.82px; */
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 35px;
+}

@@ -1,11 +1,13 @@
 import openpyxl
 import datetime
+import pickle
 
 
-def review(file_name, learn_words='5'):
+def review(user_name, learn_words='5'):
     learn_words = int(learn_words)
     res = []
     wave = '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'  #32
+    file_name = 'record-'+user_name+'.xlsx'
     workbook = openpyxl.load_workbook(file_name)
     sheet = workbook.active
 
@@ -55,5 +57,26 @@ def review(file_name, learn_words='5'):
         new_days = days
 
     workbook.save(file_name)
+    txt_name = 'today_words-'+user_name+'.txt'
     
+    with open(txt_name, 'wb') as file:
+        pickle.dump(res, file)
+        
     return res, new_days
+
+def get_review(user_name):
+    file_name = 'record-'+user_name+'.xlsx'
+    workbook = openpyxl.load_workbook(file_name)
+    sheet = workbook.active
+    today = datetime.date.today()
+    today_str = today.strftime('%Y-%m-%d')
+    if sheet.cell(row=2, column=9).value == today_str:
+        res = []
+        txt_name = 'today_words-'+user_name+'.txt'
+        with open(txt_name, 'rb') as file:
+            res = pickle.load(file)
+        days = sheet.cell(row=2, column=8).value
+    else:
+        res = 'Learn it once!'
+        days = '0'
+    return res, days
