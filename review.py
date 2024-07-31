@@ -12,6 +12,7 @@ def review(user_name, learn_words='5'):
     sheet = workbook.active
 
     today = datetime.date.today()
+    # TODO time zone
     next_date_one = today + datetime.timedelta(days=1)
     today_str = today.strftime('%Y-%m-%d')
     next_date_one = next_date_one.strftime('%Y-%m-%d')
