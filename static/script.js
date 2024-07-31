@@ -44,28 +44,29 @@ var word_check = 1;
 function displayNextItem() {
     var show_word = my_list[currentIndex]
     document.getElementById('itemDisplay').innerText = show_word;
-    if (show_word.charAt(0) == '~') {
-        var endIndex = show_word.indexOf("\n", 33);
-        if (endIndex === -1) {
-            endIndex = show_word.length;
-        }
-        var extracted_word = show_word.substring(33, endIndex);
-        audioPlayer.src = "http://dict.youdao.com/dictvoice?type=1&audio=" + extracted_word;
-        audioPlayer.play();
-    } else {
-        if (word_check % 2 == 1) {
-            audioPlayer.src = "http://dict.youdao.com/dictvoice?type=1&audio=" + show_word;
+    if ((currentIndex+1) != my_list.length) {
+        if (show_word.charAt(0) == '~') {
+            var endIndex = show_word.indexOf("\n", 33);
+            if (endIndex === -1) {
+                endIndex = show_word.length;
+            }
+            var extracted_word = show_word.substring(33, endIndex);
+            audioPlayer.src = "http://dict.youdao.com/dictvoice?type=1&audio=" + extracted_word;
             audioPlayer.play();
-            word_check++;
         } else {
-            word_check++;
+            if (word_check % 2 == 1) {
+                audioPlayer.src = "http://dict.youdao.com/dictvoice?type=1&audio=" + show_word;
+                audioPlayer.play();
+                word_check++;
+            } else {
+                word_check++;
+            }
         }
     }
 
     currentIndex++;
-    if (currentIndex >= my_list.length) {
+    if (currentIndex == my_list.length) {
         currentIndex = 0;
-        document.getElementById('itemDisplay').innerText = 'Congratulations!\n连胜' + days + '天';
         confettiJs();
     }
 }
@@ -96,6 +97,7 @@ async function display_review() {
     var get_data = await send_post();
     my_list = get_data[0];
     days = get_data[1];
+    my_list.push('Congratulations!\n连胜' + days + '天');
     displayNextItem();
 }
 
@@ -188,8 +190,8 @@ function send_post_to_get_review() {
 async function display_review_to_get_review() {
     var get_data = await send_post_to_get_review();
     my_list = get_data[0];
-    // my_list = ['test1', 'test2', 'test3'];
     days = get_data[1];
+    my_list.push('Congratulations!\n连胜' + days + '天');
     if (Array.isArray(my_list)) {
         start_flag = false;
         review_btn.style.display = 'none';

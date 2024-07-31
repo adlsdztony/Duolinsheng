@@ -25,5 +25,5 @@ def get_review():
     return jsonify(res=res, days=days)
 
 if __name__ == '__main__':
-    app.run(debug=False, port=80, threaded=True, host='0.0.0.0')
+    app.run(debug=True, port=80, threaded=True, host='0.0.0.0')
     
