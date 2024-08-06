@@ -53,6 +53,7 @@ def review(user_name, learn_words='5'):
         new_days = days
 
     workbook.save(file_name)
+    workbook.close()
     txt_name = 'today_words-'+user_name+'.txt'
     
     with open(txt_name, 'wb') as file:
@@ -75,4 +76,27 @@ def get_review(user_name):
     else:
         res = 'Learn it once!'
         days = '0'
+    workbook.close()
     return res, days
+
+
+def report_mistake(mistake_list, user_name):
+    tomorrow = (datetime.date.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+    file_name = 'record-'+user_name+'.xlsx'
+    workbook = openpyxl.load_workbook(file_name)
+    sheet = workbook.active
+    search_string = mistake_list[0][:-1]
+    count_list = 1
+    count_row = 2
+    for row in sheet.iter_rows(min_row=2, values_only=True):
+        if row[0] == search_string:
+            sheet.cell(row=count_row, column=4).value = tomorrow
+            search_string = mistake_list[count_list][:-1]
+            count_list += 1
+            if count_list == len(mistake_list):
+                break
+        count_row += 1
+        
+    workbook.save(file_name)
+    workbook.close()
+    

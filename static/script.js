@@ -1,7 +1,12 @@
 var my_list, days;
 var currentIndex = 0;
-var file_name = 'Karis';
-var learn_words = 2;
+var file_name;
+var learn_words;
+var height_now;
+var top_now;
+var width_now;
+var xhr = new XMLHttpRequest();
+
 
 
 function confettiJs() {
@@ -44,24 +49,43 @@ var word_check = 1;
 function displayNextItem() {
     var show_word = my_list[currentIndex]
     document.getElementById('itemDisplay').innerText = show_word;
-    if ((currentIndex+1) != my_list.length) {
+    if ((currentIndex + 1) != my_list.length) {
         if (show_word.charAt(0) == '~') {
+            mistake_btn.style.display = 'none';
             var endIndex = show_word.indexOf("\n", 33);
             if (endIndex === -1) {
                 endIndex = show_word.length;
             }
             var extracted_word = show_word.substring(33, endIndex);
             audioPlayer.src = "http://dict.youdao.com/dictvoice?type=1&audio=" + extracted_word;
+            audioPlayer.pause();
             audioPlayer.play();
         } else {
             if (word_check % 2 == 1) {
+                mistake_btn.style.display = 'none';
                 audioPlayer.src = "http://dict.youdao.com/dictvoice?type=1&audio=" + show_word;
+                audioPlayer.pause();
                 audioPlayer.play();
-                word_check++;
             } else {
-                word_check++;
+                mistake_btn.style.display = 'block';
             }
+            word_check++;
         }
+    } else {
+        mistake_btn.style.display = 'none';
+        if (mistake_list.length > 0) {
+            xhr.open("POST", "/report_mistake", true);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhr.onload = function () {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    console.log('report_mistake success');
+                } else {
+                    console.log('report_mistake failed');
+                }
+            };
+            xhr.send(JSON.stringify({ mistake_list: mistake_list, file_name: file_name }));
+        }
+
     }
 
     currentIndex++;
@@ -75,7 +99,6 @@ function displayNextItem() {
 function send_post() {
     var promise = new Promise(function (resolve, reject) {
         var data = JSON.stringify({ file_name: file_name, learn_words: learn_words });
-        var xhr = new XMLHttpRequest();
         xhr.open("POST", "/get_start", true);
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xhr.onload = function () {
@@ -98,16 +121,31 @@ async function display_review() {
     my_list = get_data[0];
     days = get_data[1];
     my_list.push('Congratulations!\n连胜' + days + '天');
+    mistake_btn.style.display = 'block';
     displayNextItem();
+    width_now = btn.offsetWidth;
+    height_now = btn.offsetHeight;
+    top_now = btn.getBoundingClientRect().top;
+    mistake_btn.style.top = top_now + height_now + 30 + 'px';
+    mistake_btn.style.width = width_now + 'px';
 }
 
 var start_flag = true;
 var select_btn = document.getElementById('radio-buttons');
 var btn = document.getElementById('itemDisplay');
 var input_learn_words = document.getElementById('input');
+var mistake_btn = document.getElementById('mistake_btn');
+var test = document.getElementById('test');
 
 btn.addEventListener('click', function () {
     if (start_flag) {
+        if (file_name == undefined) {
+            alert('请选择用户');
+            return;
+        }
+        if (learn_words == undefined) {
+            input_learn_words.value = '5';
+        }
         learn_words = input_learn_words.value;
         document.cookie = "learn_words=" + learn_words;
         display_review();
@@ -117,9 +155,18 @@ btn.addEventListener('click', function () {
         review_btn.style.display = 'none';
     } else {
         displayNextItem();
+        height_now = btn.offsetHeight;
+        width_now = btn.offsetWidth;
+        top_now = btn.getBoundingClientRect().top;
+        mistake_btn.style.top = top_now + height_now + 30 + 'px';
+        mistake_btn.style.width = width_now + 'px';
     }
 });
 
+var mistake_list = [];
+mistake_btn.addEventListener('click', function () {
+    mistake_list.push(my_list[currentIndex-2]);
+});
 
 const radioButtons = document.querySelectorAll('.radio-button input[name="option"]');
 let selectedOption;
@@ -141,7 +188,7 @@ radioButtons.forEach(radioButton => {
     radioButton.addEventListener('change', function () {
         if (this.checked) {
             selectedOption = this.value;
-            if (selectedOption != username){
+            if (selectedOption != username) {
                 alert('请确定是否改变用户');
             }
             file_name = selectedOption;
@@ -157,23 +204,16 @@ function getCookie(name) {
 
 
 var learn_words_cookie = getCookie('learn_words');
-if (learn_words) {
+if (learn_words_cookie) {
     input_learn_words.value = learn_words_cookie;
 } else {
     console.log("No learn_words cookie found.");
 }
 
-// 
-function playAudio() {
-    var audioPlayer = document.getElementById('audioPlayer');
-    audioPlayer.play();
-}
-
 
 function send_post_to_get_review() {
     var promise = new Promise(function (resolve, reject) {
-        var data = JSON.stringify({ file_name: file_name});
-        var xhr = new XMLHttpRequest();
+        var data = JSON.stringify({ file_name: file_name });
         xhr.open("POST", "/get_review", true);
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xhr.onload = function () {
@@ -195,8 +235,8 @@ async function display_review_to_get_review() {
     var get_data = await send_post_to_get_review();
     my_list = get_data[0];
     days = get_data[1];
-    my_list.push('Congratulations!\n连胜' + days + '天');
     if (Array.isArray(my_list)) {
+        my_list.push('Congratulations!\n连胜' + days + '天');
         start_flag = false;
         review_btn.style.display = 'none';
         select_btn.style.display = 'none';
