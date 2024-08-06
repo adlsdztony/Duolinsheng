@@ -17,7 +17,6 @@ def review(user_name, learn_words='5'):
     today_str = today.strftime('%Y-%m-%d')
     next_date_one = next_date_one.strftime('%Y-%m-%d')
 
-    # curve = [1,2,4,7,10,15,20,30,40,60]
     diff = [1,1,2,3,3,5,5,10,10,20]
     row = 2
     new_word = 1
@@ -36,10 +35,6 @@ def review(user_name, learn_words='5'):
             new_word += 1
             new_word_list.append([entry[0],entry[1]])
         elif entry[3] <= today_str:
-            # if entry[3] < today_str:
-            #     delta = (today - datetime.datetime.strptime(entry[3], '%Y-%m-%d').date()).days
-            # else:
-            #     delta = 0
             res.append(entry[0]+'\n')
             res.append(entry[1]+'\n')
             times = int(entry[4])

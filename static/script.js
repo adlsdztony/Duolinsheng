@@ -124,22 +124,7 @@ btn.addEventListener('click', function () {
 const radioButtons = document.querySelectorAll('.radio-button input[name="option"]');
 let selectedOption;
 
-radioButtons.forEach(radioButton => {
-    radioButton.addEventListener('change', function () {
-        if (this.checked) {
-            selectedOption = this.value;
-            file_name = selectedOption;
-            document.cookie = "username=" + selectedOption;
-        }
-    });
-});
-
-function getCookie(name) {
-    const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
-    return cookieValue ? cookieValue.pop() : '';
-}
-
-const username = getCookie('username');
+var username = getCookie('username');
 if (username) {
     if (username === 'Karis') {
         file_name = 'Karis';
@@ -151,6 +136,25 @@ if (username) {
 } else {
     console.log("No username cookie found.");
 }
+
+radioButtons.forEach(radioButton => {
+    radioButton.addEventListener('change', function () {
+        if (this.checked) {
+            selectedOption = this.value;
+            if (selectedOption != username){
+                alert('请确定是否改变用户');
+            }
+            file_name = selectedOption;
+            document.cookie = "username=" + selectedOption;
+        }
+    });
+});
+
+function getCookie(name) {
+    const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+    return cookieValue ? cookieValue.pop() : '';
+}
+
 
 var learn_words_cookie = getCookie('learn_words');
 if (learn_words) {
@@ -199,7 +203,7 @@ async function display_review_to_get_review() {
         input_learn_words.style.display = 'none';
         displayNextItem();
     } else {
-        alert('Learn it once!');
+        alert('多少先学点吧！');
     }
 }
 
