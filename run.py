@@ -33,5 +33,12 @@ def report_mistake():
     return make_response("", 204)
 
 if __name__ == '__main__':
-    app.run(debug=False, port=80, threaded=True, host='0.0.0.0')
-    
+    # app.run(debug=False, port=80, threaded=True, host='0.0.0.0')
+        
+    from gevent.pywsgi import WSGIServer
+    http_server = WSGIServer(
+        ('0.0.0.0', 80),
+        app,
+
+    )
+    http_server.serve_forever()
